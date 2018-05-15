@@ -19,11 +19,15 @@ package org.waarp.ftp.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -128,7 +132,14 @@ public class WaarpFtp4jClient {
 		}
 
 		// TODO hostAddress
-		System.setProperty("ftp4j.activeDataTransfer.hostAddress", this.server);
+
+		try {
+			String ipAddress = InetAddress.getByName(this.server).getHostAddress();
+			logger.info("WaarpGatewayServer IPAddress: " +ipAddress); 
+			System.setProperty("ftp4j.activeDataTransfer.hostAddress", ipAddress);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 
 		this.ftpClient.addCommunicationListener(new FTPCommunicationListener() {
 			public void sent(String arg0) {
